@@ -1,0 +1,19 @@
+
+public enum PlayMode {
+	FREE_CHOICE,
+	SINGLES,
+	DOUBLES,
+	TRIPLES,
+	QUADRUPLES,
+	RUN3,
+	RUN4,
+	RUN5,
+	RUN6,
+	RUN7,
+	RUN8,
+	RUN9,
+	RUN10,
+	RUN11,
+	RUN12,
+	RUN13;
+}
