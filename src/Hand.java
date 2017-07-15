@@ -15,7 +15,6 @@ public class Hand {
 	
 	// Get a list of all Playables for an "X of a kind" playmode (including singles).
 	
-	// TODO: don't iterate over all CardValues; just need to consider those >= highCard
 	// TODO: test this
 	public Set<Playable> getLegalNOfAKind(int n, Card highCard) throws Exception {
 		Set<Playable> res = new HashSet<Playable>();
@@ -64,14 +63,14 @@ public class Hand {
 	//TODO: Rewrite to be cleaner -> recursion?
 	// Handles getting X of a kind type Playables. For doubles and triples, returns all combinations
 	// possible. Eg, having four threes in a hand gives six ways to play double threes.
-	public HashSet<Playable> getSubsetsOfSizeN(List<Card> list, int n) throws Exception {
+	private HashSet<Playable> getSubsetsOfSizeN(List<Card> cardList, int n) throws Exception {
 
 		HashSet<Playable> moves = new HashSet<Playable>();
 		int fixedIdx = 0;
 		
 		// Singles case
 		if (n == 1) {
-			for (Card c : cards) {
+			for (Card c : cardList) {
 				Playable move = new Playable(Arrays.asList(c), PlayMode.SINGLES, c);
 				moves.add(move);
 			}
@@ -79,10 +78,10 @@ public class Hand {
 		
 		// Doubles case
 		else if (n == 2) {
-			while (fixedIdx <= list.size() - n) {
-				for (Card elem : list.subList(fixedIdx + 1, list.size())) {
+			while (fixedIdx <= cardList.size() - n) {
+				for (Card elem : cardList.subList(fixedIdx + 1, cardList.size())) {
 					HashSet<Card> moveCards = new HashSet<Card>();
-					moveCards.add(list.get(fixedIdx));
+					moveCards.add(cardList.get(fixedIdx));
 					moveCards.add(elem);
 					Playable move = new Playable(moveCards, PlayMode.DOUBLES, Collections.max(moveCards));
 					moves.add(move);
@@ -95,12 +94,12 @@ public class Hand {
 		// Triples case
 		else if (n == 3) {
 			int fixedIdx2 = 1;
-			while (fixedIdx <= list.size() - n) {
-				while (fixedIdx2 <= list.size() - n + 1) {
-					for (Card elem2: list.subList(fixedIdx2 + 1, list.size())) {
+			while (fixedIdx <= cardList.size() - n) {
+				while (fixedIdx2 <= cardList.size() - n + 1) {
+					for (Card elem2: cardList.subList(fixedIdx2 + 1, cardList.size())) {
 						HashSet<Card> moveCards = new HashSet<Card>();
-						moveCards.add(list.get(fixedIdx));
-						moveCards.add(list.get(fixedIdx2));
+						moveCards.add(cardList.get(fixedIdx));
+						moveCards.add(cardList.get(fixedIdx2));
 						moveCards.add(elem2);
 						Playable move = new Playable(moveCards, PlayMode.TRIPLES, Collections.max(moveCards));
 						moves.add(move);
@@ -115,7 +114,7 @@ public class Hand {
 		
 		// Quadruples case
 		else if (n == 4) {
-			Playable move = new Playable(list, PlayMode.QUADRUPLES, Collections.max(list));
+			Playable move = new Playable(cardList, PlayMode.QUADRUPLES, Collections.max(cardList));
 			moves.add(move);
 		}
 		

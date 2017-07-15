@@ -20,10 +20,4 @@ public class TestPlayer {
 		this.player = new Player(cards);
 	}
 
-	@Test
-	public void testGetLowestCard() {
-		assertTrue(player.getLowestCard().compareTo(
-				new Card(Suit.HEARTS, CardValue.SEVEN)) == 0);
-	}
-
 }

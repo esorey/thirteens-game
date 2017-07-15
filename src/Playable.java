@@ -21,9 +21,30 @@ public class Playable {
 		return this.highCard;
 	}
 	
+	public PlayMode getPlayMode() {
+		return this.playmode;
+	}
+	
 	@Override
 	public String toString() {
 		return playmode.toString() + ": " + cards.toString();
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof Playable)) {
+			return false;
+		}
+		Playable other = (Playable) o;
+		return other.getCards().equals(this.cards) && 
+			   other.getPlayMode().equals(this.playmode) &&
+		       other.getHighCard().equals(this.highCard);
+	}
+	
+	
+	@Override
+	public int hashCode() {
+		return 31 * playmode.hashCode() + 17 * cards.hashCode() + highCard.hashCode(); 
 	}
 	
 	
