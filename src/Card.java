@@ -34,12 +34,45 @@ public class Card implements Comparable<Card>{
 		return 0;
 	}
 	
-	@Override
+	/*@Override
 	public String toString() {
 		return value.toString().toLowerCase() + " of " + suit.toString().toLowerCase();
-	}
+	}*/
+	
+	
 	
 	@Override
+	public String toString() {
+		return "Card [suit=" + suit + ", value=" + value + "]";
+	}
+
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((suit == null) ? 0 : suit.hashCode());
+		result = prime * result + ((value == null) ? 0 : value.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Card other = (Card) obj;
+		if (suit != other.suit)
+			return false;
+		if (value != other.value)
+			return false;
+		return true;
+	}
+	
+	/*@Override
 	public int hashCode() {
 		return 31 * suit.hashCode() + value.hashCode();
 	}
@@ -52,6 +85,8 @@ public class Card implements Comparable<Card>{
 		Card other = (Card) o;
 		return other.getSuit().equals(this.suit) &&
 			   other.getValue().equals(this.value);
-	}
+	}*/
+	
+	
 
 }

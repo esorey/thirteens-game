@@ -64,8 +64,13 @@ public class Hand {
 	// Handles getting X of a kind type Playables. For doubles and triples, returns all combinations
 	// possible. Eg, having four threes in a hand gives six ways to play double threes.
 	private HashSet<Playable> getSubsetsOfSizeN(List<Card> cardList, int n) throws Exception {
-
+		
 		HashSet<Playable> moves = new HashSet<Playable>();
+
+		if (cardList.isEmpty()) {
+			return moves;
+		}
+
 		int fixedIdx = 0;
 		
 		// Singles case
@@ -114,8 +119,11 @@ public class Hand {
 		
 		// Quadruples case
 		else if (n == 4) {
-			Playable move = new Playable(cardList, PlayMode.QUADRUPLES, Collections.max(cardList));
-			moves.add(move);
+			// Make only make a valid Playable if there are 4 cards of the same value
+			if (cardList.size() == 4) {
+				Playable move = new Playable(cardList, PlayMode.QUADRUPLES, Collections.max(cardList));
+				moves.add(move);
+			}
 		}
 		
 		
