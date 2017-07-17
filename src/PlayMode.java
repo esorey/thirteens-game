@@ -5,7 +5,6 @@ public enum PlayMode {
 	DOUBLES,
 	TRIPLES,
 	QUADRUPLES,
-	RUN3,
 	RUN4,
 	RUN5,
 	RUN6,

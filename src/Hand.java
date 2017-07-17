@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -12,35 +13,8 @@ public class Hand {
 	public Hand(List<Card> cards) {
 		this.cards = cards;
 	}
-	
-	// Get a list of all Playables for an "X of a kind" playmode (including singles).
-	
-	// TODO: test this
-	public Set<Playable> getLegalNOfAKind(int n, Card highCard) throws Exception {
-		Set<Playable> res = new HashSet<Playable>();
-		for (CardValue val : CardValue.values()) {
 
-			// Only want values >= the high card's value
-			if (val.compareTo(highCard.getValue()) >= 0) {
-				List<Card> valMatches = cards.stream()
-												.filter(c -> c.getValue().equals(val))
-												.collect(Collectors.toList());
-				
-				// Get all the different subset possibilities
-				HashSet<Playable> playables = getSubsetsOfSizeN(valMatches, n);
 
-				// This takes care of suit ordering
-				List<Playable> legalPlayables = playables.stream()
-												.filter(p -> p.getHighCard().compareTo(highCard) >= 0)
-												.collect(Collectors.toList());
-				
-				// Add them to our result
-				res.addAll(legalPlayables);	
-			}
-		}
-		return res;
-	}
-	
 	// Return the lowest card in the hand
 	public Card getLowestCard() {
 		
@@ -54,16 +28,62 @@ public class Hand {
 		return lowestCard;
 	}
 	
+
 	// Check if the hand is empty
 	public boolean isEmpty() {
 		return this.cards.isEmpty();
 	}
 	
+
+	// Get a list of CardValues in this hand. Useful for computing runs
+	private List<CardValue> getCardValues() {
+		List<CardValue> vals = this.cards.stream().map(c -> c.getValue()).collect(Collectors.toList());
+		return vals;
+	}
 	
-	//TODO: Rewrite to be cleaner -> recursion?
+	
+	private int getValueCount(CardValue val) {
+		return getCardsByValue(val).size();
+	}
+	
+
+	private List<Card> getCardsByValue(CardValue val) {
+		List<Card> valMatches = this.cards.stream().filter(c -> c.getValue().equals(val)).collect(Collectors.toList());
+		return valMatches;
+	}
+	
+	
+	// Get a list of all Playables for an "X of a kind" playmode (including singles).
+	public Set<Playable> getLegalNOfAKind(int n, Card highCard) throws Exception {
+		Set<Playable> res = new HashSet<Playable>();
+		for (CardValue val : CardValue.values()) {
+
+			// Only want values >= the high card's value
+			if (val.compareTo(highCard.getValue()) >= 0) {
+				List<Card> valMatches = cards.stream()
+												.filter(c -> c.getValue().equals(val))
+												.collect(Collectors.toList());
+				
+				// Get all the different subset possibilities
+				Set<Playable> playables = getSubsetsOfSizeN(valMatches, n);
+
+				// This takes care of suit ordering
+				List<Playable> legalPlayables = playables.stream()
+												.filter(p -> p.getHighCard().compareTo(highCard) >= 0)
+												.collect(Collectors.toList());
+				
+				// Add them to our result
+				res.addAll(legalPlayables);	
+			}
+		}
+		return res;
+	}
+	
+	
+	//TODO: Rewrite to be cleaner -> recursion? Could probably follow approach used for runs
 	// Handles getting X of a kind type Playables. For doubles and triples, returns all combinations
 	// possible. Eg, having four threes in a hand gives six ways to play double threes.
-	private HashSet<Playable> getSubsetsOfSizeN(List<Card> cardList, int n) throws Exception {
+	private Set<Playable> getSubsetsOfSizeN(List<Card> cardList, int n) throws Exception {
 		
 		HashSet<Playable> moves = new HashSet<Playable>();
 
@@ -90,7 +110,6 @@ public class Hand {
 					moveCards.add(elem);
 					Playable move = new Playable(moveCards, PlayMode.DOUBLES, Collections.max(moveCards));
 					moves.add(move);
-					
 				}
 				fixedIdx++;
 			}
@@ -126,13 +145,81 @@ public class Hand {
 			}
 		}
 		
-		
 		// Otherwise it's an error
 		else {
 			throw new Exception("invalid subset size");
 		}
 		return moves;
 	}
+	
+	
+	public Set<Playable> getLegalRuns(int runLength, Card highCard, PlayMode playMode) throws Exception {
+		Set<Playable> legalRuns = new HashSet<Playable>();
+		for (CardValue val : CardValue.cardValues) {
+			
+			// Only care about values that are >= the highCard's value
+			if (val.compareTo(highCard.getValue()) >= 0) {
+				List<CardValue> runVals = CardValue.getRunValues(runLength, val);
+				
+				// Check if the hand contains this particular run
+				if (this.getCardValues().containsAll(runVals)) {
+					// Get all runs of these values that are in the hand
+					Set<Playable> runs = getRunVariations(runVals, playMode);
+					
+					// Filter one more time to handle suit issues
+					runs = runs.stream().filter(p -> p.getHighCard().compareTo(highCard) > 0).collect(Collectors.toSet());
+					
+					// Add these runs to the final result
+					legalRuns.addAll(runs);
+				}
+			}
+		}
+		return legalRuns;
+	}
+	
+	
+	// For the run specified by the given list of CardValues, return a set containing
+	// all such runs playable from this hand. If the hand contains multiple cards with the same value,
+	// any one of these cards can be used in the run.
+	// Approach: compute number of combos -> make that many empty lists -> for each value, iterate over cards with
+	// that value and add them to the combo lists
+	private Set<Playable> getRunVariations(List<CardValue> runVals, PlayMode playMode) {
+		// First we compute the total number of combos we'll have. This is just the product
+		// of frequencies.
+		int numCombos = 1;
+		for (CardValue val : runVals) {
+			numCombos *= getValueCount(val);
+		}
+		
+		// Initialize this many empty lists
+		ArrayList<ArrayList<Card>> allCombos = new ArrayList<ArrayList<Card>>(numCombos);
+		for (int i = 0; i < numCombos; i++) {
+			allCombos.add(new ArrayList<Card>());
+		}
+		
+		// For a given value, add each of the different cards of that value (differing in suit) to a combo list
+		for (CardValue currentVal : runVals) {
+			List<Card> valMatches = getCardsByValue(currentVal);
+			
+			// Add each card to repeatSize of the combos
+			for (int i = 0; i < allCombos.size(); i++) {
+				ArrayList<Card> currCombo = allCombos.get(i);
 
+				//modulo maps the i (index over allCombos) to the correct index over valMatches
 
+				currCombo.add(valMatches.get(i % valMatches.size())); 
+			}
+		}
+		
+		// Convert to a set of Playables and return
+		Set<Playable> allPlayables = allCombos.stream()
+											  .map(cards -> new Playable(cards, playMode, Collections.max(cards)))
+											  .collect(Collectors.toSet());
+		return allPlayables;
+	}
+	
+	
+	public static void main(String[] args) {
+		ArrayList<Integer> test = new ArrayList<Integer>(10);
+	}
 }

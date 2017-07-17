@@ -43,7 +43,7 @@ public class Card implements Comparable<Card>{
 	
 	@Override
 	public String toString() {
-		return "Card [suit=" + suit + ", value=" + value + "]";
+		return this.value + " " + this.suit;
 	}
 
 
