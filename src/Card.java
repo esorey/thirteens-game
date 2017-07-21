@@ -9,6 +9,10 @@ public class Card implements Comparable<Card>{
 		this.value = val;
 	}
 	
+	public static Card lowestCard() {
+		return new Card(Suit.SPADES, CardValue.THREE);
+	}
+	
 	public Suit getSuit() {
 		return this.suit;
 	}

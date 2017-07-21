@@ -46,6 +46,36 @@ public class Hand {
 		return getCardsByValue(val).size();
 	}
 	
+	
+	// Return all playables in this hand
+	public Set<Playable> getFreeChoicePlayables() throws Exception {
+		Set<Playable> results = new HashSet<Playable>();
+		Card toBeat = Card.lowestCard(); // Free choice means anything goes
+		// Add n of a kind type playables
+		for (PlayMode m : PlayMode.getNOfAKindModes()) {
+			results.addAll(getLegalNOfAKind(m, toBeat));
+		}
+		// Add run type playables
+		for (PlayMode m : PlayMode.getRunModes()) {
+			results.addAll(getLegalRuns(m, toBeat));
+		}
+		return results;
+	}
+	
+	
+	// Return all playables for as specified playmode and card to beat
+	public Set<Playable> getPlayables(PlayMode playMode, Card toBeat) throws Exception {
+		if (playMode.isNOfAKind()) {
+			return getLegalNOfAKind(playMode, toBeat);
+		}
+		else if (playMode.isRun()) {
+			return getLegalRuns(playMode, toBeat);
+		}
+		else {
+			throw new Exception("Invalid playmode passed to getPlayables");
+		}
+	}
+	
 
 	private List<Card> getCardsByValue(CardValue val) {
 		List<Card> valMatches = this.cards.stream().filter(c -> c.getValue().equals(val)).collect(Collectors.toList());
@@ -54,7 +84,8 @@ public class Hand {
 	
 	
 	// Get a list of all Playables for an "X of a kind" playmode (including singles).
-	public Set<Playable> getLegalNOfAKind(int n, Card highCard) throws Exception {
+	public Set<Playable> getLegalNOfAKind(PlayMode playMode, Card highCard) throws Exception {
+		int n = playMode.getNOfAKindCount();
 		Set<Playable> res = new HashSet<Playable>();
 		for (CardValue val : CardValue.values()) {
 
@@ -153,8 +184,9 @@ public class Hand {
 	}
 	
 	
-	public Set<Playable> getLegalRuns(int runLength, Card highCard, PlayMode playMode) throws Exception {
+	public Set<Playable> getLegalRuns(PlayMode playMode, Card highCard) throws Exception {
 		Set<Playable> legalRuns = new HashSet<Playable>();
+		int runLength = playMode.getRunLength();
 		for (CardValue val : CardValue.cardValues) {
 			
 			// Only care about values that are >= the highCard's value

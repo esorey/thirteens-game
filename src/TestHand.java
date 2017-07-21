@@ -63,9 +63,9 @@ public class TestHand {
 			Playable move = new Playable(Arrays.asList(c), PlayMode.SINGLES, c);
 			correct.add(move);
 		}
-		Set<Playable> singles = handNOfAKind.getLegalNOfAKind(1, toBeat);
+		Set<Playable> singles = handNOfAKind.getLegalNOfAKind(PlayMode.SINGLES, toBeat);
 		assertEquals(correct, singles);
-		singles = handNOfAKind.getLegalNOfAKind(1, new Card(Suit.HEARTS, CardValue.TWO));
+		singles = handNOfAKind.getLegalNOfAKind(PlayMode.SINGLES, new Card(Suit.HEARTS, CardValue.TWO));
 		assertEquals(0, singles.size());
 	}
 	
@@ -92,9 +92,9 @@ public class TestHand {
 		correct.add(move4);
 		correct.add(move5);
 		correct.add(move6);
-		Set<Playable> doubles = handNOfAKind.getLegalNOfAKind(2, toBeat);
+		Set<Playable> doubles = handNOfAKind.getLegalNOfAKind(PlayMode.DOUBLES, toBeat);
 		assertEquals(doubles, correct);
-		doubles = handNOfAKind.getLegalNOfAKind(2, new Card(Suit.HEARTS, CardValue.TWO));
+		doubles = handNOfAKind.getLegalNOfAKind(PlayMode.DOUBLES, new Card(Suit.HEARTS, CardValue.TWO));
 		assertEquals(0, doubles.size());
 	}
 	
@@ -114,9 +114,9 @@ public class TestHand {
 		correct.add(move2);
 		correct.add(move3);
 		correct.add(move4);
-		Set<Playable> triples = handNOfAKind.getLegalNOfAKind(3, toBeat);
+		Set<Playable> triples = handNOfAKind.getLegalNOfAKind(PlayMode.TRIPLES, toBeat);
 		assertEquals(triples, correct);
-		triples = handNOfAKind.getLegalNOfAKind(3, new Card(Suit.HEARTS, CardValue.TWO));
+		triples = handNOfAKind.getLegalNOfAKind(PlayMode.TRIPLES, new Card(Suit.HEARTS, CardValue.TWO));
 		assertEquals(0, triples.size());
 	}
 	
@@ -126,9 +126,9 @@ public class TestHand {
 		Set<Playable> correct = new HashSet<Playable>();
 		Collection<Card> quad = cardsNOfAKind.subList(0, 4);
 		correct.add(new Playable(quad, PlayMode.QUADRUPLES, cardsNOfAKind.get(0)));
-		Set<Playable> quads = handNOfAKind.getLegalNOfAKind(4, toBeat);
+		Set<Playable> quads = handNOfAKind.getLegalNOfAKind(PlayMode.QUADRUPLES, toBeat);
 		assertEquals(quads, correct);
-		quads = handNOfAKind.getLegalNOfAKind(4, new Card(Suit.HEARTS, CardValue.TWO));
+		quads = handNOfAKind.getLegalNOfAKind(PlayMode.QUADRUPLES, new Card(Suit.HEARTS, CardValue.TWO));
 		assertEquals(0, quads.size());
 	}
 	
@@ -154,9 +154,7 @@ public class TestHand {
 	correct.add(run4);
 	correct.add(run5);
 	correct.add(run6);
-	Set<Playable> runs = handRuns.getLegalRuns(4, new Card(Suit.CLUBS, CardValue.SIX), PlayMode.RUN4);
-	System.out.println(correct);
-	System.out.println(runs);
+	Set<Playable> runs = handRuns.getLegalRuns(PlayMode.RUN4, new Card(Suit.CLUBS, CardValue.SIX));
 	assertEquals(runs, correct);
 	}
 }

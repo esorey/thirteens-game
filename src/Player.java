@@ -1,4 +1,6 @@
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Player {
 	private Hand hand;
@@ -16,22 +18,13 @@ public class Player {
 		return hand.isEmpty();
 	}
 	
-	// Given the last played Playable and a PlayMode, return a Playable to be played. Return null
-	// if there is no legal move.
-	public Playable makeMove(Playable lastPlayed, PlayMode mode) {
-		
+	// Get all playables this player can play for a given playmode and card to beat
+	public Set<Playable> getLegalPlayables(Card toBeat, PlayMode playMode) throws Exception {
+		if (playMode.equals(PlayMode.FREE_CHOICE)) {
+			return hand.getFreeChoicePlayables();
+		}
+		else {
+			return hand.getPlayables(toBeat, playMode);
+		}
 	}
-	
-	// Return a list of Playables that represents all legal moves at the time
-	public List<Playable> getAllLegalMoves(Playable lastPlayed, PlayMode mode) {
-		
-	}
-	
-	private List<Playable> getSingles(){};
-	private List<Playable> getDoubles(Card cardToBeat) throws Exception{
-		return hand.getLegalNOfAKind(2, cardToBeat);
-	}
-	private List<Playable> getTriples(){};
-	private List<Playable> getQuadruples(){};
-	private List<Playable> getRuns(int length){};
 }
