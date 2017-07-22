@@ -1,3 +1,4 @@
+package test;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
@@ -5,6 +6,11 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import game.Card;
+import game.CardValue;
+import game.Player;
+import game.Suit;
 
 public class TestPlayer {
 	private Player player;

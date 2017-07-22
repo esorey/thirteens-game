@@ -1,4 +1,8 @@
+package game;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 public class GameState {
 	private Player[] players;
@@ -6,7 +10,7 @@ public class GameState {
 	private int activePlayerIdx;
 	private int lastPlayerToPlayIdx;
 	private Deck deck;
-	private Playable lastPlayed;
+	private Card lastPlayedHighCard;
 	
 	// Sets up a new game
 	public GameState(int nPlayers) throws IllegalArgumentException {
@@ -25,7 +29,7 @@ public class GameState {
 		activePlayMode = PlayMode.FREE_CHOICE;
 		activePlayerIdx = getFirstPlayerIdx();
 		lastPlayerToPlayIdx = getFirstPlayerIdx(); // Probably a more efficient way to do this
-		lastPlayed = null;
+		lastPlayedHighCard = null;
 	}
 	
 	// Returns the index of the player to go first. This is the player with the 
@@ -45,13 +49,10 @@ public class GameState {
 			} 
 			
 		}
-		
 		return lowestIdx;
-		
 	}
 	
 	private boolean hasWinner() {
-		boolean res = false;
 		for (Player p : players) {
 			if (p.isOutOfCards()) {
 				return true;
@@ -61,19 +62,24 @@ public class GameState {
 	}
 	
 	
-	private void takeTurn() {
+	private void takeTurn() throws Exception {
 		Player activePlayer = players[activePlayerIdx];
 		System.out.println("Active: Player " + Integer.toString(activePlayerIdx));
 		System.out.println("Play Mode: " + activePlayMode.toString());
-		System.out.println("Hand: " + activePlayer.hand.toString());
-		Playable move = activePlayer.makeMove(lastPlayed, activePlayMode);
+		System.out.println("Hand: " + activePlayer.getCards());
+		System.out.println("Legal Playables:");
+		List<Playable> legalPlayables = new ArrayList<Playable>(activePlayer.getLegalPlayables(activePlayMode, lastPlayedHighCard));
+		Collections.sort(legalPlayables, new SortPlayables());
+		for (int i = 0; i < legalPlayables.size(); i++) {
+			System.out.println(String.format("[%d] : %s", i, legalPlayables.get(i).toString()));
+		}
 		
 	}
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		
 		// Initialize the game
-		int nPlayers = Integer.valueOf(args[0]);
+		int nPlayers = 2;//Integer.valueOf(args[0]);
 		GameState game = new GameState(nPlayers);
 		game.takeTurn();
 		

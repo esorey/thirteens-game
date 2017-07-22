@@ -1,3 +1,4 @@
+package game;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -12,6 +13,11 @@ public class Hand {
 	
 	public Hand(List<Card> cards) {
 		this.cards = cards;
+	}
+	
+	// Mainly for testing; can probably remove later
+	public List<Card> getCards() {
+		return this.cards;
 	}
 
 
@@ -199,7 +205,7 @@ public class Hand {
 					Set<Playable> runs = getRunVariations(runVals, playMode);
 					
 					// Filter one more time to handle suit issues
-					runs = runs.stream().filter(p -> p.getHighCard().compareTo(highCard) > 0).collect(Collectors.toSet());
+					runs = runs.stream().filter(p -> p.getHighCard().compareTo(highCard) >= 0).collect(Collectors.toSet());
 					
 					// Add these runs to the final result
 					legalRuns.addAll(runs);
@@ -229,18 +235,39 @@ public class Hand {
 			allCombos.add(new ArrayList<Card>());
 		}
 		
+		boolean lastAlternating = true;
 		// For a given value, add each of the different cards of that value (differing in suit) to a combo list
 		for (CardValue currentVal : runVals) {
 			List<Card> valMatches = getCardsByValue(currentVal);
 			
-			// Add each card to repeatSize of the combos
-			for (int i = 0; i < allCombos.size(); i++) {
-				ArrayList<Card> currCombo = allCombos.get(i);
+			if (lastAlternating) {
+				// Add each card to repeatSize of the combos
+				int repeatSize = numCombos / valMatches.size();
+				for (int i = 0; i < allCombos.size(); i++) {
+					ArrayList<Card> currCombo = allCombos.get(i);
 
-				//modulo maps the i (index over allCombos) to the correct index over valMatches
+					//integer division maps the i (index over allCombos) to the correct index over valMatches
 
-				currCombo.add(valMatches.get(i % valMatches.size())); 
+					currCombo.add(valMatches.get(i / repeatSize)); 
+				}
+				lastAlternating = valMatches.size() > 1 ? false : true;
 			}
+			else {
+				for (int i = 0; i < allCombos.size(); i++) {
+					ArrayList<Card> currCombo = allCombos.get(i);
+
+					//modulo maps the i (index over allCombos) to the correct index over valMatches
+
+					currCombo.add(valMatches.get(i % valMatches.size())); 
+				}
+				lastAlternating = valMatches.size() > 1 ?  true : false;
+			}
+		}
+		
+		// If there are no combos, just return the empty set
+		int comboCount = allCombos.stream().mapToInt(ArrayList::size).sum(); // total number of combos
+		if (comboCount == 0) {
+			return new HashSet<Playable>();
 		}
 		
 		// Convert to a set of Playables and return
@@ -251,7 +278,25 @@ public class Hand {
 	}
 	
 	
-	public static void main(String[] args) {
-		ArrayList<Integer> test = new ArrayList<Integer>(10);
+	public static void main(String[] args) throws Exception {
+		List<Card> handCards = new ArrayList<Card>();
+		handCards.add(new Card(Suit.CLUBS, CardValue.THREE));
+		handCards.add(new Card(Suit.HEARTS, CardValue.FOUR));
+		handCards.add(new Card(Suit.CLUBS, CardValue.SIX));
+		handCards.add(new Card(Suit.HEARTS, CardValue.EIGHT));
+		handCards.add(new Card(Suit.CLUBS, CardValue.NINE));
+		handCards.add(new Card(Suit.CLUBS, CardValue.TEN));
+		handCards.add(new Card(Suit.DIAMONDS, CardValue.TEN));
+		handCards.add(new Card(Suit.SPADES, CardValue.JACK));
+		handCards.add(new Card(Suit.CLUBS, CardValue.QUEEN));
+		handCards.add(new Card(Suit.DIAMONDS, CardValue.QUEEN));
+		handCards.add(new Card(Suit.CLUBS, CardValue.ACE));
+		handCards.add(new Card(Suit.DIAMONDS, CardValue.ACE));
+		handCards.add(new Card(Suit.HEARTS, CardValue.TWO));
+		Hand hand = new Hand(handCards);
+		Card lowCard = new Card(Suit.SPADES, CardValue.THREE);
+		for (Playable p : hand.getLegalRuns(PlayMode.RUN5, lowCard)) {
+			System.out.println(p);
+		}
 	}
 }

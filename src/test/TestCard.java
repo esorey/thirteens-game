@@ -1,6 +1,11 @@
+package test;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+
+import game.Card;
+import game.CardValue;
+import game.Suit;
 
 public class TestCard {
 

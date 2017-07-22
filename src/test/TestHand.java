@@ -1,3 +1,4 @@
+package test;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
@@ -12,6 +13,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
+
+import game.Card;
+import game.CardValue;
+import game.Hand;
+import game.PlayMode;
+import game.Playable;
+import game.Suit;
 
 // TODO: make the testing setup cleaner; as it is, changing the 
 // cards in the hands could mess up everything
