@@ -24,7 +24,7 @@ public enum CardValue {
 	public static List<CardValue> cardValues = Arrays.asList(CardValue.values());
 	
 	// Return a list of CardValues for a specified run format
-	public static List<CardValue> getRunValues(int runLength, CardValue highVal) throws Exception {
+	public static List<CardValue> getRunValues(int runLength, CardValue highVal) {
 		int highValIdx = cardValues.indexOf(highVal); // get the index of the high value
 		int startIdx = highValIdx - (runLength - 1); // compute the index of the low value
 		if (startIdx < 0) { // invalid run length such as "run of length 4, with high value 5"

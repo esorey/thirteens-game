@@ -42,4 +42,9 @@ public class Player {
 			return hand.getPlayables(playMode, toBeat);
 		}
 	}
+	
+	// Play a given playable from the player's hand
+	public void playMove(Playable move) {
+		hand.playMove(move);
+	}
 }

@@ -10,10 +10,8 @@ import game.CardValue;
 
 public class TestCardValue {
 
-	// TODO: figure out how to make sure that an invalid run
-	// throws an error
 	@Test
-	public void testGetRunValues() throws Exception {
+	public void testGetValidRunValues() throws Exception {
 		CardValue[] correctArr = new CardValue[] {CardValue.THREE, 
 		                                       	  CardValue.FOUR,
 		                                       	  CardValue.FIVE, 
@@ -21,6 +19,13 @@ public class TestCardValue {
 		                                       	  CardValue.SEVEN};
 		List<CardValue> correct = Arrays.asList(correctArr);
 		assertEquals(correct, CardValue.getRunValues(5, CardValue.SEVEN));
+		
+	}
+	
+	@Test
+	public void testGetInvalidRunValues() {
+		// Malformed runs should return an empty list of card values
+		assertTrue(CardValue.getRunValues(5, CardValue.FOUR).isEmpty());
 	}
 
 }

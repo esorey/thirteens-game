@@ -1,6 +1,7 @@
 package game;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -175,7 +176,7 @@ public class Hand {
 		
 		// Quadruples case
 		else if (n == 4) {
-			// Make only make a valid Playable if there are 4 cards of the same value
+			// only make a valid Playable if there are 4 cards of the same value
 			if (cardList.size() == 4) {
 				Playable move = new Playable(cardList, PlayMode.QUADRUPLES, Collections.max(cardList));
 				moves.add(move);
@@ -221,6 +222,9 @@ public class Hand {
 	// any one of these cards can be used in the run.
 	// Approach: compute number of combos -> make that many empty lists -> for each value, iterate over cards with
 	// that value and add them to the combo lists
+	
+	
+	
 	private Set<Playable> getRunVariations(List<CardValue> runVals, PlayMode playMode) {
 		// First we compute the total number of combos we'll have. This is just the product
 		// of frequencies.
@@ -275,6 +279,12 @@ public class Hand {
 											  .map(cards -> new Playable(cards, playMode, Collections.max(cards)))
 											  .collect(Collectors.toSet());
 		return allPlayables;
+	}
+	
+	
+	public void playMove(Playable move) {
+		Collection<Card> moveCards = move.getCards();
+		this.cards.removeAll(moveCards);
 	}
 	
 	

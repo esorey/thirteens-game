@@ -47,7 +47,6 @@ public class Playable implements Comparable<Playable> {
 	}
 	
 	@Override
-	// TODO: fix this egregious hack with sorting
 	public String toString() {
 		List<Card> cardsList = new ArrayList<Card>(cards);
 		Collections.sort(cardsList);
