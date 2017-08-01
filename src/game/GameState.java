@@ -108,16 +108,34 @@ public class GameState {
 		}
 		
 		else {
+			// Provide the option to pass
+			System.out.println("[0] : Pass");
+			
+			// Sort the options
 			Collections.sort(legalPlayables, new SortPlayables());
+			
+			
+			// Print the legal options
 			for (int i = 0; i < legalPlayables.size(); i++) {
-				System.out.println(String.format("[%d] : %s", i, legalPlayables.get(i).toString()));
+				System.out.println(String.format("[%d] : %s", i + 1, legalPlayables.get(i).toString()));
 			}
 			
 			// Prompt the user to choose a playable
 			Scanner reader = new Scanner(System.in);  // Reading from System.in
 			System.out.println("Choose a move: ");
 			int n = reader.nextInt(); // Scans the next token of the input as an int.
-			Playable choice = legalPlayables.get(n);
+			
+			if (n == 0) { // The player opts to pass
+				activePlayerIdx = (activePlayerIdx + 1) % players.length;
+
+				if (activePlayerIdx == lastPlayerToPlayIdx) {
+					activePlayMode = PlayMode.FREE_CHOICE;
+					moveToBeat = null;
+				}
+				System.out.println("\n\n");
+				return;
+			}
+			Playable choice = legalPlayables.get(n-1);
 			System.out.println("\n\n");
 			// TODO: figure out how to close scanner without also closing System.in
 			//reader.close();
